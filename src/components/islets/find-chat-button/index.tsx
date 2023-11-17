@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "@/lib/clsx";
 import { sendSearchModalEvent } from "@/lib/events/searchModalEvent";
 
 export const FindChatButtonSkeleton = () => {
@@ -9,18 +10,30 @@ export const FindChatButtonSkeleton = () => {
     </button>
   );
 };
-
-export default function FindChatButton() {
+interface FindSomethingButtonProps
+  extends React.HTMLAttributes<HTMLButtonElement> {
+  text?: string;
+  icon?: React.ReactNode;
+}
+export default function FindSomethingButton({
+  text,
+  icon,
+  className,
+  ...props
+}: FindSomethingButtonProps) {
   const handleClick = () => {
     sendSearchModalEvent("open");
   };
   return (
     <button
       onClick={handleClick}
-      className="flex w-full justify-between rounded-sm bg-background p-1.5 text-left text-xs text-gray-400 hover:bg-background/70"
+      className={clsx(
+        "flex w-full items-center justify-between gap-2 rounded-sm bg-background p-1.5 text-left text-[13px] text-gray-400 hover:bg-background/70",
+        className,
+      )}
     >
-      Find your friends & chats
-      <div className="rounded-sm bg-gray-800/50 px-1 text-[11px]">Ctrl K</div>
+      {text}
+      {icon}
     </button>
   );
 }

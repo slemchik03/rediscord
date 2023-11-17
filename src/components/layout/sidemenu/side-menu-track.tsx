@@ -1,11 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ListedServer } from "@/lib/entities/server";
 import SideMenuItem from "./side-menu-item";
 import { clsx } from "@/lib/utils";
 import { BsDiscord } from "react-icons/bs";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import Divider from "@/components/ui/divider";
+import { useParams } from "next/navigation";
 
 type SideMenuTrackProps = {
   servers: ListedServer[];
@@ -37,7 +38,12 @@ const ServerMenuItem = ({
 };
 
 export default function SideMenuTrack({ servers }: SideMenuTrackProps) {
-  const [active, setActive] = useState<string>("default");
+  const params = useParams();
+  const defaultActive = useMemo(
+    () => servers.find(({ id }) => params?.id === id)?.id ?? "default",
+    [servers],
+  );
+  const [active, setActive] = useState<string>(defaultActive);
 
   return (
     <>
@@ -46,7 +52,7 @@ export default function SideMenuTrack({ servers }: SideMenuTrackProps) {
           Direct messages side menu button
         */}
         <SideMenuItem
-          href="/channels/me"
+          href="/me"
           onClick={() => setActive("default")}
           tooltipContent={<div className="font-semibold">Direct messages</div>}
           notificationCount={432}
@@ -60,13 +66,9 @@ export default function SideMenuTrack({ servers }: SideMenuTrackProps) {
         </SideMenuItem>
 
         <Divider className="w-8" />
-
-        {/*
-          List of servers
-        */}
         {servers?.map((server) => (
           <ServerMenuItem
-            href={`/channels/${server.id}`}
+            href={`/server/${server.id}/`}
             key={server.id}
             server={server}
             isActive={active === server.id}

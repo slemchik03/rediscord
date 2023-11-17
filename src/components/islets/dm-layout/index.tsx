@@ -1,43 +1,37 @@
-import Sidebar from "@/components/layout/sidebar";
-import FindChatButton from "@/components/islets/find-chat-button";
+"use client";
 
-import Header from "@/components/layout/header";
-import DMHeaderMenu from "@/components/islets/dm-header-menu";
-import DMChannelList from "@/components/islets/dm-channel-list";
 import VoiceStatusFooter from "@/components/islets/voice-status-footer";
+import dynamic from "next/dynamic";
+import ActiveNowPanelSkeleton from "../active-now-panel/active-now-panel-skeleton";
+import NavBar from "@/components/layout/mobile/navbar";
+import DMLayoutSidebar from "./dm-layout-sidebar";
+import { useViewportType } from "@/state/viewport-type";
+import { useSidebarStatus } from "@/state/sidebar-status";
+import DMLayoutSidebarContent from "./dm-layout-sidebar-content";
 
-import { ListedDMChannel } from "@/lib/entities/channel";
-import {
-  MOCK_DELAY,
-  MOCK_CHANNELS,
-  generateRandomFakeChannels,
-} from "@/lib/utils/mock";
-import { delay } from "@/lib/utils";
+const ActiveNowPanel = dynamic(() => import("../active-now-panel"), {
+  ssr: false,
+  loading: () => <ActiveNowPanelSkeleton />,
+});
 
-export const getData = async (): Promise<{ channels: ListedDMChannel[] }> => {
-  /*
-   * Generate fake channels for testing
-   */
-  const channels: ListedDMChannel[] = generateRandomFakeChannels(MOCK_CHANNELS);
-  await delay(MOCK_DELAY);
-  return { channels };
-};
+export default function DMLayout({ children }: React.PropsWithChildren) {
+  const { status } = useSidebarStatus();
+  const viewportType = useViewportType().type;
 
-export default async function DMLayout({ children }: React.PropsWithChildren) {
-  const { channels } = await getData();
   return (
     <>
-      <Sidebar className="bottom-70 flex flex-col">
-        <Header verticalPadding="2" className="bg-midground">
-          <FindChatButton />
-        </Header>
-        <div className="hover-scrollbar flex-1 overflow-y-auto py-2 pl-2 pr-0.5">
-          <DMHeaderMenu />
-          <DMChannelList channels={channels} />
+      <DMLayoutSidebar>
+        <DMLayoutSidebarContent viewportType={viewportType}>
+          {viewportType !== "mobile" && <VoiceStatusFooter />}
+        </DMLayoutSidebarContent>
+      </DMLayoutSidebar>
+      <div className="grid min-h-screen xl:grid-cols-[1fr_350px]">
+        {children}
+        <div className="hidden max-w-[350px] flex-1 xl:flex ">
+          <ActiveNowPanel />
         </div>
-        <VoiceStatusFooter />
-      </Sidebar>
-      {children}
+      </div>
+      {viewportType === "mobile" && status === "open" && <NavBar />}
     </>
   );
 }
