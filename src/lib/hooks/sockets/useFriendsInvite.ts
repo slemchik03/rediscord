@@ -6,7 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 
-export default function useFriendInviteSocket(): void {
+export default function useFriendInvite(): void {
   const queryClient = useQueryClient();
   const { socket } = useSocket();
   const { data: session } = useSession();

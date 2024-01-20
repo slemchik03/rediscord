@@ -10,16 +10,18 @@ import clsx from "@/lib/clsx";
 
 export default function FriendList() {
   const { currentTab } = useFriendsTabStore();
-  const { friends, isFetching } = useGetFriendList({
+  const { friends, isStale } = useGetFriendList({
     currentTab,
   });
 
+  // Change tab only if we already fetched new friends for this tab
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const tab = useMemo(() => friendsTabsProps[currentTab], [friends]);
   const CurrentTab = tab.component;
   return (
     <motion.div
       key={tab.name}
-      className={clsx("flex flex-1 flex-col", isFetching && "animate-pulse")}
+      className={clsx("flex flex-1 flex-col", !isStale && "animate-pulse")}
       animate={{
         opacity: [0, 1],
       }}

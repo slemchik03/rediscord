@@ -11,32 +11,37 @@ export default async function getFriendsTabUsers({
   tab: FriendsTabEnum;
 }) {
   const session = await getServerSession(authOptions);
-  switch (tab) {
-    case FriendsTabEnum.Available:
-      return (
-        await prisma.user.findUnique({
-          where: { id: session?.user?.id },
-          select: {
-            friends: true
-          },
-        })
-      )?.friends;
-    case FriendsTabEnum.Pending:
-      return (
-        await prisma.user.findUnique({
-          where: {
-            id: session?.user?.id,
-          },
-          select: {
-            recivedFriendRequest: {
-              select: {
-                requester: true,
-              },
+  if (tab === FriendsTabEnum.Available || tab === FriendsTabEnum.All) {
+    return (
+      await prisma.user.findUnique({
+        where: {
+          id: session?.user?.id,
+        },
+        select: {
+          friends: true,
+        },
+      })
+    )?.friends.filter(({ status }) => {
+      if (tab === FriendsTabEnum.All) {
+        return true;
+      } else return status !== "OFFLINE";
+    });
+  }
+
+  if (tab === FriendsTabEnum.Pending) {
+    return (
+      await prisma.user.findUnique({
+        where: {
+          id: session?.user?.id,
+        },
+        select: {
+          recivedFriendRequest: {
+            select: {
+              requester: true,
             },
           },
-        })
-      )?.recivedFriendRequest.map((req) => req.requester);
-    default:
-      return [];
+        },
+      })
+    )?.recivedFriendRequest.map((req) => req.requester);
   }
 }

@@ -55,6 +55,7 @@ model Message {
   channelId String
   channel   Channel  @relation(fields: [channelId], references: [id])
   seen      Boolean  @default(false)
+
   @@index([userId])
   @@index([channelId])
 }
@@ -74,15 +75,14 @@ model Request {
 
 model Channel {
   id            String      @id @default(uuid())
-  name          String
+  name          String      @default("")
   type          ChannelType
   messages      Message[]
-  leader        User?       @relation("ChannelLeader", fields: [userId], references: [id])
+  leader        User?       @relation("ChannelLeader", fields: [leaderId], references: [id])
   leaderId      String?
   prarticipants User[]
-  userId        String?
 
-  @@index([userId])
+  @@index([leaderId])
 }
 
 model Server {

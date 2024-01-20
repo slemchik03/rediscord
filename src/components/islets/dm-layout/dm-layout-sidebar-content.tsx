@@ -20,9 +20,9 @@ export default function DMLayoutSidebarContent({
       </Header>
       <div className="hover-scrollbar flex-1 overflow-y-auto py-2 pl-2 pr-0.5">
         {viewportType !== "mobile" && <DMHeaderMenu />}
-        <Suspense fallback={<DMChatListSkeleton />}>
-          <DMChatList />
-        </Suspense>
+        {/* <Suspense fallback={<DMChatListSkeleton />}> */}
+        <DMChatList />
+        {/* </Suspense> */}
       </div>
       {children}
     </>

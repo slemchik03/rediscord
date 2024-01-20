@@ -24,6 +24,10 @@ const FRIEND_REQUEST_ERRORS = {
     status: "error",
     message: "Please enter username!",
   },
+  alreadyFriends: {
+    status: "error",
+    message: "You are aleready friends!",
+  },
   alreadySent: {
     status: "error",
     message: "You have already sent the invite!",
@@ -51,6 +55,7 @@ export default async function sendFriendRequest(
 
     const requestedUser = await prisma.user.findUnique({
       where: { username: friendUsername.toString() },
+      include: { friends: { where: { id: session?.user?.id } } },
     });
     const requestCount = await prisma.request.count({
       where: {
@@ -58,6 +63,9 @@ export default async function sendFriendRequest(
         addresseeId: requestedUser?.id,
       },
     });
+    if (requestedUser?.friends.length) {
+      return FRIEND_REQUEST_ERRORS["alreadyFriends"];
+    }
     if (!requestedUser) return FRIEND_REQUEST_ERRORS["notFound"];
 
     if (requestCount) {

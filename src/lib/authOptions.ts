@@ -2,7 +2,6 @@ import type { AuthOptions, Session } from "next-auth";
 import bcrypt from "bcrypt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "./prismaClient";
-import { experimental_taintObjectReference } from "react";
 
 const authOptions: AuthOptions = {
   providers: [
@@ -76,8 +75,5 @@ const authOptions: AuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
-// experimental_taintObjectReference(
-//   "Configuration cannot be passed to the client",
-//   authOptions,
-// );
+
 export default authOptions;

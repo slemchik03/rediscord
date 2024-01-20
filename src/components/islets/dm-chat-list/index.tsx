@@ -1,16 +1,24 @@
-import { MOCK_CHATS, generateRandomFakeChats } from "@/lib/utils/mock";
-import { Chat } from "@/lib/entities/chat";
+import { useQuery } from "@tanstack/react-query";
 import DMChatListContent from "./dm-chat-list-content";
-import { cache, memo } from "react";
+import { ChannelInfo } from "./dm-chat-list-item";
+import useChannelList from "@/lib/hooks/sockets/useChannelList";
 
-export const getData = cache(async (): Promise<{ channels: Chat[] }> => {
-  const channels: Chat[] = generateRandomFakeChats(MOCK_CHATS);
-  return { channels };
-});
+function DMChatListSocket() {
+  useChannelList();
+  return null;
+}
+function DMChatList() {
+  const { data: channelsInfo } = useQuery<ChannelInfo[]>({
+    queryKey: ["channels-list"],
+    enabled: false,
+  });
 
-async function DMChatList() {
-  const { channels } = await getData();
-  return <DMChatListContent channels={channels} />;
+  return (
+    <>
+      <DMChatListContent channels={channelsInfo || []} />
+      <DMChatListSocket />
+    </>
+  );
 }
 
-export default memo(DMChatList);
+export default DMChatList;

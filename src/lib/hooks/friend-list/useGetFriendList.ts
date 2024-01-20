@@ -7,7 +7,7 @@ export default function useGetFriendList({
 }: {
   currentTab: FriendsTabEnum;
 }) {
-  const { data, isFetching } = useQuery({
+  const { data, isFetching, isStale } = useQuery({
     queryKey: ["friends-list", currentTab],
     queryFn: () => getFriendsTabUsers({ tab: currentTab }),
     placeholderData: keepPreviousData,
@@ -15,5 +15,6 @@ export default function useGetFriendList({
   return {
     friends: Array.isArray(data) ? data : [],
     isFetching,
+    isStale,
   };
 }

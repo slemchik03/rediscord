@@ -1,20 +1,25 @@
 import dayjs from "dayjs";
 import Avatar from "@/components/ui/avatar";
-import { Message } from "@/lib/entities/message";
 
-interface Props extends Message { }
+interface Props {
+  id: string;
+  authorAvatar: string;
+  authorNickname: string;
+  message: string;
+  createdAt: Date;
+}
 export default function MessageItem({
   authorAvatar,
   authorNickname,
   message,
-  timestamp,
+  createdAt,
 }: Props) {
-  const parsedTimestamp = dayjs(timestamp);
+  const parsedTimestamp = dayjs(createdAt);
 
-  const hDiff = dayjs(Date.now()).diff(timestamp) / 1000 / 60 / 60;
+  const hDiff = dayjs(Date.now()).diff(createdAt) / 1000 / 60 / 60;
   return (
     <div
-    role="message-item"
+      role="message-item"
       className="grid min-h-[35px] cursor-pointer grid-cols-[35px_1fr] 
     items-start gap-2 bg-transparent px-4 py-3 hover:bg-midground"
     >

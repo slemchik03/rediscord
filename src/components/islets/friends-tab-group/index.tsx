@@ -6,11 +6,8 @@ import TabGroupButton from "@/components/ui/tab-group/tab-group-button";
 import { useFriendsTabStore } from "@/state/friends-tab";
 import { FriendsTabEnum, friendsTabsProps } from "../friend-list/friend-tabs";
 import useGetFriendList from "@/lib/hooks/friend-list/useGetFriendList";
-export default function FriendsTabGroup({
-  friendRequestsCount,
-}: {
-  friendRequestsCount: number;
-}) {
+
+export default function FriendsTabGroup() {
   const { currentTab, setCurrentTab } = useFriendsTabStore();
 
   const requestsCount = useGetFriendList({

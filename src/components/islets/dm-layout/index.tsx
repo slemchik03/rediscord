@@ -9,6 +9,12 @@ import { useViewportType } from "@/state/viewport-type";
 import { useSidebarStatus } from "@/state/sidebar-status";
 import DMLayoutSidebarContent from "./dm-layout-sidebar-content";
 import { AnimatePresence } from "framer-motion";
+import useFriendList from "@/lib/hooks/sockets/useFriendList";
+
+function FriendListSocket() {
+  useFriendList();
+  return null;
+}
 
 const ActiveNowPanel = dynamic(() => import("../active-now-panel"), {
   ssr: false,
@@ -35,6 +41,7 @@ export default function DMLayout({ children }: React.PropsWithChildren) {
       <AnimatePresence>
         {viewportType === "mobile" && status === "open" && <NavBar />}
       </AnimatePresence>
+      <FriendListSocket />
     </>
   );
 }

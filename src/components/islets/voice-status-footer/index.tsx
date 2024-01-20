@@ -6,9 +6,9 @@ import {
   Tooltip,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { UserStatuses, VoiceStatus } from "@/lib/entities/user";
+import { VoiceStatus } from "@/lib/entities/user";
 import { clsx } from "@/lib/utils";
-import { User } from "@prisma/client";
+import { User, UserStatuses } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -65,10 +65,9 @@ export default function VoiceStatusFooter() {
   const router = useRouter();
   const { data: session } = useSession();
 
-  const userFromServer = queryClient.getQueryData<User>([
-    "user-from-server",
-  ]);
+  const userFromServer = queryClient.getQueryData<User>(["user-from-server"]);
   const user = session?.user || userFromServer;
+  const currentStatus = UserStatuses[user?.status || "IDLE"];
 
   return (
     <TooltipProvider>
@@ -76,13 +75,14 @@ export default function VoiceStatusFooter() {
         <button className="flex gap-2 rounded-md py-1 pl-0.5 pr-2 text-left leading-tight hover:bg-white/20">
           <Avatar
             src={user?.avatar}
-            status={UserStatuses.Online}
+            status={user?.status || UserStatuses.IDLE}
             alt={user?.username!}
           />
           <div>
             <div className="text-xs font-semibold">{user?.username}</div>
             <div className="text-[11px] text-gray-300">
-              {UserStatuses.Offline}
+              {currentStatus.slice(0, 1).toUpperCase() +
+                currentStatus.slice(1).toLowerCase()}
             </div>
           </div>
         </button>

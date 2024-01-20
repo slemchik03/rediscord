@@ -1,10 +1,9 @@
 "use client";
-import React from "react";
+import { useEffect, useState } from "react";
 import { List } from "@/components/ui/list";
 import { useParams } from "next/navigation";
 import DMChatListHeader from "./dm-chat-list-header";
-import DMChatListItem from "./dm-chat-list-item";
-import { Chat } from "@/lib/entities/chat";
+import DMChatListItem, { ChannelInfo } from "./dm-chat-list-item";
 import { motion } from "framer-motion";
 import clsx from "@/lib/clsx";
 
@@ -35,13 +34,13 @@ export function ActiveListItemTab({
 }
 
 interface DMChatListContentProps {
-  channels: Chat[];
+  channels: ChannelInfo[];
 }
 export default function DMChatListContent({
   channels,
 }: DMChatListContentProps) {
   const [currentChannels, setCurrentChannels] =
-    React.useState<Chat[]>(channels);
+    useState<ChannelInfo[]>(channels);
 
   const handleChannelDelete = (channelId: string) => {
     setCurrentChannels((prev) =>
@@ -50,25 +49,33 @@ export default function DMChatListContent({
   };
   const params = useParams();
   const activeIdx = currentChannels.findIndex((v) => v.id == params?.id);
-  
+
+  useEffect(() => {
+    if (channels) {
+      setCurrentChannels(channels);
+    }
+  }, [channels]);
+
   return (
     <div className="pt-4">
       <DMChatListHeader />
       <List className="relative mt-1">
         <ActiveListItemTab
           offsetY={Math.max(activeIdx * 44, 0)}
-          hide={ activeIdx == -1}
+          hide={activeIdx == -1}
         />
-        {currentChannels.map((channel) => (
-          <DMChatListItem
-            active={params?.id === channel.id}
-            key={channel.id}
-            channel={channel}
-            onDelete={() => {
-              handleChannelDelete(channel.id);
-            }}
-          />
-        ))}
+        {currentChannels.map((channel) => {
+          return (
+            <DMChatListItem
+              active={params?.id === channel.id}
+              key={channel.id}
+              channelInfo={channel}
+              onDelete={() => {
+                handleChannelDelete(channel.id);
+              }}
+            />
+          );
+        })}
       </List>
     </div>
   );

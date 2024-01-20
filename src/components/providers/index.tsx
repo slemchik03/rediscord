@@ -8,12 +8,10 @@ import { SocketProvider } from "./SocketProvider";
 
 export default function Providers({ children }: PropsWithChildren) {
   return (
-    <SocketProvider>
-      <QueryClientProvider client={getQueryClient()}>
-        <SessionProvider>
-          {children}
-        </SessionProvider>
-      </QueryClientProvider>
-    </SocketProvider>
+    <QueryClientProvider client={getQueryClient()}>
+      <SessionProvider>
+        <SocketProvider>{children}</SocketProvider>
+      </SessionProvider>
+    </QueryClientProvider>
   );
 }

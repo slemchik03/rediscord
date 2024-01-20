@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { io as ClientIO, Socket } from "socket.io-client";
 
@@ -20,26 +21,28 @@ export const useSocket = () => {
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  
+  const { data: session } = useSession();
   useEffect(() => {
-    const socketInstance = ClientIO(process.env.PUBLIC_URL!, {
-      addTrailingSlash: false,
-      path: "/api/socket/io",
-    });
-    socketInstance.on("connect", () => {
-      setIsConnected(true);
-    });
+    if (session?.user?.id) {
+      const socketInstance = ClientIO(process.env.SOCKET_URL!, {
+        extraHeaders: {
+          userId: session?.user?.id!,
+        },
+      });
+      socketInstance.on("connect", () => {
+        setIsConnected(true);
+      });
 
-    socketInstance.on("disconnect", () => {
-      setIsConnected(false);
-    });
+      socketInstance.on("disconnect", () => {
+        setIsConnected(false);
+      });
+      setSocket(socketInstance);
 
-    setSocket(socketInstance);
-
-    return () => {
-      socketInstance.disconnect();
-    };
-  }, []);
+      return () => {
+        socketInstance.disconnect();
+      };
+    }
+  }, [session?.user?.id]);
 
   return (
     <SocketContext.Provider value={{ socket, isConnected }}>

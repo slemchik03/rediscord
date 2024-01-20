@@ -1,8 +1,9 @@
 "use client";
 
-import useFriendInviteSocket from "@/lib/hooks/sockets/useFriendsInviteSocket";
+import useFriendInvite from "@/lib/hooks/sockets/useFriendsInvite";
+
 
 export default function Notifications() {
-  useFriendInviteSocket();
+  useFriendInvite();
   return null;
 }

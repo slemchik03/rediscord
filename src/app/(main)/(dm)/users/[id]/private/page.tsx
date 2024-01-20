@@ -1,26 +1,52 @@
-import InputMessageBox from "@/components/islets/input-message-box";
-import MessageList from "@/components/islets/message-list";
-import { Page, PageContent, PageHeader } from "@/components/layout/page";
-import Avatar from "@/components/ui/avatar";
-import Divider from "@/components/ui/divider";
-import { delay } from "@/lib/utils";
-import {
-  generateRandomFakeMegssages,
-  getRandomUserById,
-} from "@/lib/utils/mock";
-import RightHeaderContent from "./right-header-content";
-import { GoBackWideBtn } from "@/components/islets/go-back-btn";
+import prisma from "@/lib/prismaClient";
+import { getServerSession } from "next-auth";
+import authOptions from "@/lib/authOptions";
+import { ChannelType, type Prisma } from "@prisma/client";
+import { redirect } from "next/navigation";
+import UserDirect from "./UserDirect";
+import getQueryClient from "@/app/getQueryClient";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 
-const getData = async (id: string) => {
-  /*
-   * Generate fake user for testing
-   */
-  const user = getRandomUserById(id);
-  const messages = generateRandomFakeMegssages(30);
-  user.id = id;
+export type DirectData = {
+  messages: Prisma.MessageGetPayload<{ include: { user: true } }>[];
+  user: Prisma.UserGetPayload<{ include: { channels: true } }>;
+};
 
-  await delay(1000);
-  return { user, messages };
+const getDirectData = async (
+  userId: string,
+) => {
+  try {
+    const session = await getServerSession(authOptions);
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      include: {
+        channels: {
+          where: {
+            prarticipants: {
+              some: {
+                id: session?.user?.id,
+              },
+            },
+            type: ChannelType.DIRECT,
+          },
+          include: {
+            messages: {
+              include: { user: true },
+            },
+          },
+        },
+      },
+    });
+    return {
+      user,
+      messages: user?.channels.at(0)?.messages || [],
+    } as DirectData;
+  } catch (err) {
+    console.log(err);
+    return { user: null, messages: [] };
+  }
 };
 
 export default async function ChannelPage({
@@ -28,34 +54,16 @@ export default async function ChannelPage({
 }: {
   params: { id: string };
 }) {
-  const { user, messages } = await getData(params.id);
+  const queryClient = getQueryClient();
+  const data = await getDirectData(params.id);
+
+  if (!data.user) {
+    redirect("/me");
+  }
+  queryClient.setQueryData(["current-user-direct"], data);
   return (
-    <Page className="ml-0 transition-all sm:ml-[310px]">
-      <PageHeader
-        className="horizontal-scroll sticky top-0 z-[10]"
-        rightContent={<RightHeaderContent />}
-      >
-        <div className="flex items-center gap-4">
-          <div className="flex flex-none items-center gap-3 text-sm font-semibold">
-            <Avatar
-              size="sm"
-              src={user.avatar}
-              alt="ewqwqe"
-              status={user.status}
-            />
-            {user.name}
-          </div>
-          <Divider vertical />
-          <div className="text-xs text-gray-400">{user.username}</div>
-        </div>
-      </PageHeader>
-      <PageContent className="hover-scrollbar relative grid">
-        <MessageList messageList={messages} />
-        <div className="sticky bottom-0 z-[1] flex flex-grow items-end bg-[#313338] px-4">
-          <InputMessageBox />
-        </div>
-        <GoBackWideBtn />
-      </PageContent>
-    </Page>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <UserDirect />
+    </HydrationBoundary>
   );
 }

@@ -4,7 +4,6 @@ import { BsPersonFill } from "react-icons/bs";
 import { Page, PageContent, PageHeader } from "@/components/layout/page";
 import FriendList from "@/components/islets/friend-list";
 
-
 export default async function MePage() {
   return (
     <Page className="duration-[200ms] transition-all ease-in-out sm:ml-[310px]">
@@ -15,12 +14,12 @@ export default async function MePage() {
             Friends
           </div>
           <Divider vertical className="pb-2 sm:pb-0" />
-          <FriendsTabGroup friendRequestsCount={10} />
+          <FriendsTabGroup />
         </div>
       </PageHeader>
       <PageContent className="flex-col lg:flex-row" padding="none">
         <div className="flex flex-1 px-6 pt-4">
-          <FriendList  />
+          <FriendList />
         </div>
       </PageContent>
     </Page>
