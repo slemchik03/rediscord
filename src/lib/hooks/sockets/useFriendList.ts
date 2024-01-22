@@ -1,6 +1,7 @@
 import getFriendsTabUsers from "@/app/(actions)/general/getFriendsTabUsers";
 import { FriendsTabEnum } from "@/components/islets/friend-list/friend-tabs";
 import { useSocket } from "@/components/providers/SocketProvider";
+import userQueryKeys from "@/lib/queries/users";
 import { User, UserStatuses } from "@prisma/client";
 import {
   keepPreviousData,
@@ -38,7 +39,7 @@ export default function useFriendList() {
   const { socket } = useSocket();
   const { data: session } = useSession();
   const { data: friends } = useQuery({
-    queryKey: ["friends-list", FriendsTabEnum.All],
+    queryKey: userQueryKeys.friendsList({ tab: FriendsTabEnum.All }),
     queryFn: () => getFriendsTabUsers({ tab: FriendsTabEnum.All }),
     placeholderData: keepPreviousData,
   });
@@ -50,11 +51,11 @@ export default function useFriendList() {
         const eventKey = `friend-status-${friend.id}`;
         socket?.on(eventKey, ({ status }: { status: UserStatuses }) => {
           queryClient.setQueryData<User[]>(
-            ["friends-list", FriendsTabEnum.All],
+            userQueryKeys.friendsList({ tab: FriendsTabEnum.All }),
             (old) => updateUsers({ old, newUser: { ...friend, status } }),
           );
           queryClient.setQueryData<User[]>(
-            ["friends-list", FriendsTabEnum.Available],
+            userQueryKeys.friendsList({ tab: FriendsTabEnum.Available }),
             (old) =>
               updateUsers({
                 old,

@@ -1,4 +1,5 @@
 import { ChannelInfo } from "@/components/islets/dm-chat-list/dm-chat-list-item";
+import channelQueryKeys from "@/lib/queries/channels";
 import { User } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -23,11 +24,14 @@ export default function useUserDirectEffects({
         name: user.username,
         image: user.avatar,
       };
-      queryClient.setQueryData<ChannelInfo[]>(["channels-list"], (old) => [
-        ...(old || []),
-        channel,
-      ]);
+      queryClient.setQueryData<ChannelInfo[]>(
+        channelQueryKeys.channelList(),
+        (old) => [...(old || []), channel],
+      );
     }
-    return () => void queryClient.resetQueries({ queryKey: ["channels-list"] });
+    return () =>
+      void queryClient.resetQueries({
+        queryKey: channelQueryKeys.channelList(),
+      });
   }, [queryClient, isNoChannelWithUser, user]);
 }

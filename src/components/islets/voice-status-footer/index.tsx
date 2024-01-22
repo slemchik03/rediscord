@@ -7,6 +7,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { VoiceStatus } from "@/lib/entities/user";
+import userQueryKeys from "@/lib/queries/users";
 import { clsx } from "@/lib/utils";
 import { User, UserStatuses } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -65,7 +66,9 @@ export default function VoiceStatusFooter() {
   const router = useRouter();
   const { data: session } = useSession();
 
-  const userFromServer = queryClient.getQueryData<User>(["user-from-server"]);
+  const userFromServer = queryClient.getQueryData<User>(
+    userQueryKeys.userFromServer(),
+  );
   const user = session?.user || userFromServer;
   const currentStatus = UserStatuses[user?.status || "IDLE"];
 

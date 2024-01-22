@@ -1,9 +1,10 @@
 import updateUserProfile from "@/app/(actions)/user-settings/updateUserProfile";
+import userQueryKeys from "@/lib/queries/users";
 import fileToDataUrl from "@/lib/utils/fileToDataURL";
 import { Prisma } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { ChangeEvent, useEffect,  useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import toast from "react-hot-toast";
 
@@ -20,10 +21,9 @@ export default function useUserSettingsData() {
   const queryClient = useQueryClient();
   const [avatar, setAvatar] = useState<string | null>(null);
   const { update, data: session } = useSession();
-  const updatedUserInfo = queryClient.getQueryData<FullUserInfo>([
-    "user-info",
-    session?.user?.id,
-  ]);
+  const updatedUserInfo = queryClient.getQueryData<FullUserInfo>(
+    userQueryKeys.userInfo({ id: session?.user?.id! }),
+  );
   const [formState, action] = useFormState(updateUserProfile, null);
 
   const editAvatarHandler = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -38,10 +38,13 @@ export default function useUserSettingsData() {
 
   useEffect(() => {
     if (formState?.ok && formState?.data) {
-      queryClient.setQueryData(["user-info", session?.user?.id], {
-        user: { ...formState?.data?.user! },
-        ...formState?.data?.account!,
-      });
+      queryClient.setQueryData(
+        userQueryKeys.userInfo({ id: session?.user?.id! }),
+        {
+          user: { ...formState?.data?.user! },
+          ...formState?.data?.account!,
+        },
+      );
 
       (async function () {
         await update({ user: formState?.data?.user });
@@ -60,6 +63,6 @@ export default function useUserSettingsData() {
       action,
     },
     editAvatarHandler,
-    session
+    session,
   };
 }

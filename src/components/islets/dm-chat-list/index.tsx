@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import DMChatListContent from "./dm-chat-list-content";
 import { ChannelInfo } from "./dm-chat-list-item";
 import useChannelList from "@/lib/hooks/sockets/useChannelList";
+import channelQueryKeys from "@/lib/queries/channels";
 
 function DMChatListSocket() {
   useChannelList();
@@ -9,7 +10,7 @@ function DMChatListSocket() {
 }
 function DMChatList() {
   const { data: channelsInfo } = useQuery<ChannelInfo[]>({
-    queryKey: ["channels-list"],
+    queryKey: channelQueryKeys.channelList(),
     enabled: false,
   });
 

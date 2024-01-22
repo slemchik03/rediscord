@@ -17,21 +17,26 @@ export default function FriendsTabGroup() {
   const PendingBadge = <Badge className="ml-1" count={requestsCount} />;
 
   return (
-    <TabGroup data-testid="tab-group">
-      {Object.values(friendsTabsProps).map((item) => (
-        <TabGroupButton
-          active={currentTab === item.key}
-          key={item.key}
-          tabType={item.key}
-          onClick={() => setCurrentTab(item.key)}
-          data-testid={
-            currentTab === item.key ? "active-tab" : `tab-group-btn-${item.key}`
-          }
-        >
-          {item.name || item.name}
-          {item.key === FriendsTabEnum.Pending && PendingBadge}
-        </TabGroupButton>
-      ))}
+    <TabGroup className="overflow-x-hidden h-[25px]" data-testid="tab-group">
+      <div className="absolute flex top-0 left-0 gap-4">
+        {Object.values(friendsTabsProps).map((item) => (
+          <TabGroupButton
+            active={currentTab === item.key}
+            key={item.key}
+            tabType={item.key}
+            onClick={() => setCurrentTab(item.key)}
+            data-testid={
+              currentTab === item.key
+                ? "active-tab"
+                : `tab-group-btn-${item.key}`
+            }
+            className="max-w-[max-content]"
+          >
+            {item.name || item.name}
+            {item.key === FriendsTabEnum.Pending && PendingBadge}
+          </TabGroupButton>
+        ))}
+      </div>
     </TabGroup>
   );
 }

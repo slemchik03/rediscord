@@ -10,6 +10,7 @@ import { EmptyBox } from "../empty-box-image";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import handleFriendInvite from "@/app/(actions)/user-interaction/handleFriendInvite";
 import { FriendsTabEnum } from "./friend-tabs";
+import userQueryKeys from "@/lib/queries/users";
 
 interface FilterFriendsTabProps {
   loading?: boolean;
@@ -81,7 +82,7 @@ export const FilterFriendsInviteTab = (
     onSettled: (data, _, props) => {
       if (data?.status === "success") {
         return queryClient.setQueryData<User[]>(
-          ["friends-list", FriendsTabEnum.Pending],
+          userQueryKeys.friendsList({ tab: FriendsTabEnum.Pending }),
           (old) => old?.filter(({ id }) => props.userId !== id),
         );
       }

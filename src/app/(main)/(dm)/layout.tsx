@@ -8,6 +8,8 @@ import DMLayout from "@/components/islets/dm-layout";
 import { FriendsTabEnum } from "@/components/islets/friend-list/friend-tabs";
 import authOptions from "@/lib/authOptions";
 import prisma from "@/lib/prismaClient";
+import channelQueryKeys from "@/lib/queries/channels";
+import userQueryKeys from "@/lib/queries/users";
 import { User, UserStatuses } from "@prisma/client";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { getServerSession } from "next-auth/next";
@@ -90,9 +92,12 @@ export default async function SuspendedDMLayout({
     getChannelInfoList(),
   ]);
 
-  queryClient.setQueryData(["user-from-server"], user);
-  queryClient.setQueryData(["friends-list", FriendsTabEnum.Available], friends);
-  queryClient.setQueryData(["channels-list"], channelsInfo);
+  queryClient.setQueryData(userQueryKeys.userFromServer(), user);
+  queryClient.setQueryData(
+    userQueryKeys.friendsList({ tab: FriendsTabEnum.Available }),
+    friends,
+  );
+  queryClient.setQueryData(channelQueryKeys.channelList(), channelsInfo);
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <DMLayout>{children}</DMLayout>

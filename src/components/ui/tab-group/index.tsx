@@ -11,12 +11,12 @@ export default function TabGroup({
 }: TabGroupProps) {
   return (
     <div
-      className="h-full max-h-[25px] w-full overflow-y-hidden"
+      className="w-full"
       {...props}
     >
       <div
         className={clsx(
-          `flex gap-${gap}`,
+          `relative flex gap-${gap}`,
           className,
         )}
       >

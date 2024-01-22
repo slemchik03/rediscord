@@ -18,7 +18,7 @@ export default async function ServerChannelPage({
   const slug = params["channel-slug"]?.at(0) || "test";
   const channel = generateRandomChannels(1)[0];
   const queryClient = getQueryClient();
-  await queryClient.prefetchQuery({queryKey: ['channel', channel.id], queryFn: () => channel});
+  queryClient.setQueryData(["channel", channel.id], channel);
 
   const ChannelIcon = channelIcons[channel.type];
   return (

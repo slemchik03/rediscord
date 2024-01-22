@@ -4,6 +4,7 @@ import prisma from "@/lib/prismaClient";
 import authOptions from "@/lib/authOptions";
 import getQueryClient from "@/app/getQueryClient";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import userQueryKeys from "@/lib/queries/users";
 
 const getUserData = async (accountId: string) => {
   try {
@@ -25,7 +26,10 @@ export default async function UserSettings({ modal }: { modal?: boolean }) {
   const queryClient = getQueryClient();
   const session = await getServerSession(authOptions);
   const userData = await getUserData(session?.user?.accountId!);
-  queryClient.setQueryData(["user-info", session?.user?.id], userData);
+  queryClient.setQueryData(
+    userQueryKeys.userInfo({ id: session?.user?.id! }),
+    userData,
+  );
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

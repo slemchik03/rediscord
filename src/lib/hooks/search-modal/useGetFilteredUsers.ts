@@ -1,9 +1,10 @@
 import getUsersGeneral from "@/app/(actions)/general/getUsers";
+import userQueryKeys from "@/lib/queries/users";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 
 export default function useGetFilteredUsers({ filter }: { filter: string }) {
   const query = useQuery({
-    queryKey: ["users-general", filter],
+    queryKey: userQueryKeys.usersGeneral({ filter }),
     queryFn: () =>
       getUsersGeneral({
         where: {

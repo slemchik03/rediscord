@@ -8,7 +8,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
-
+import channelQueryKeys from "@/lib/queries/channels";
+import userQueryKeys from "@/lib/queries/users";
 function updateChannels({
   old,
   status,
@@ -41,7 +42,7 @@ function updateDirectUser({
 export default function useChannelList(): void {
   const { socket } = useSocket();
   const { data: channelsInfo } = useQuery<ChannelInfo[]>({
-    queryKey: ["channels-list"],
+    queryKey: channelQueryKeys.channelList(),
     enabled: false,
     placeholderData: keepPreviousData,
   });
@@ -51,17 +52,21 @@ export default function useChannelList(): void {
     if (channelsInfo?.length && socket) {
       const eventHandler = (data: { status: UserStatuses } | null) => {
         if (data && data.status) {
-          queryClient.setQueryData<ChannelInfo[]>(["channels-list"], (old) =>
-            updateChannels({
-              old: old || [],
-              status: data.status,
-            }),
+          queryClient.setQueryData<ChannelInfo[]>(
+            channelQueryKeys.channelList(),
+            (old) =>
+              updateChannels({
+                old: old || [],
+                status: data.status,
+              }),
           );
-          queryClient.setQueryData<DirectData>(["current-user-direct"], (old) =>
-            updateDirectUser({
-              old,
-              status: data.status,
-            }),
+          queryClient.setQueryData<DirectData>(
+            userQueryKeys.currentUserDirect(),
+            (old) =>
+              updateDirectUser({
+                old,
+                status: data.status,
+              }),
           );
         }
       };

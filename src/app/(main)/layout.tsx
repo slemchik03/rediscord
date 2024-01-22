@@ -12,6 +12,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { PropsWithChildren, ReactNode } from "react";
 import getQueryClient from "../getQueryClient";
+import userQueryKeys from "@/lib/queries/users";
 
 const setNotificationState = async (client: QueryClient, userId: string) => {
   const friendInvites = await prisma.request.findMany({
@@ -19,7 +20,10 @@ const setNotificationState = async (client: QueryClient, userId: string) => {
       addresseeId: userId,
     },
   });
-  client.setQueryData(["friends-list", FriendsTabEnum.Pending], friendInvites);
+  client.setQueryData(
+    userQueryKeys.friendsList({ tab: FriendsTabEnum.Pending }),
+    friendInvites,
+  );
 };
 
 export default async function Layout({

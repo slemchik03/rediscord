@@ -8,10 +8,11 @@ import UserDirectContent from "@/components/islets/user-direct-content";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { UserStatuses } from "@prisma/client";
 import { DirectData } from "./page";
+import userQueryKeys from "@/lib/queries/users";
 
 export default function UserDirect() {
   const { data } = useQuery<DirectData>({
-    queryKey: ["current-user-direct"],
+    queryKey: userQueryKeys.currentUserDirect(),
     placeholderData: keepPreviousData,
     enabled: false,
   });

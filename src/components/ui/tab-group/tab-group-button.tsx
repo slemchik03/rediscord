@@ -13,7 +13,7 @@ const tabGroupVariants = {
     unactive: "text-gray-300 hover:text-gray-200",
   },
   addFriend: {
-    base: `px-2 py-0.5 text-sm font-semibold`,
+    base: `px-2 py-0.5 text-sm font-semibold whitespace-nowrap`,
     active: "text-green-500 bg-transparent",
     unactive: "rounded-lg bg-green-700 text-gray-100 hover:bg-green-800",
   },

@@ -1,5 +1,6 @@
 import { FriendsTabEnum } from "@/components/islets/friend-list/friend-tabs";
 import { useSocket } from "@/components/providers/SocketProvider";
+import userQueryKeys from "@/lib/queries/users";
 import playNotification from "@/lib/utils/playNotification";
 import { User } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -16,7 +17,7 @@ export default function useFriendInvite(): void {
       playNotification();
       if (user) {
         queryClient.setQueryData<User[]>(
-          ["friends-list", FriendsTabEnum.Pending],
+          userQueryKeys.friendsList({ tab: FriendsTabEnum.Pending }),
           (old) => {
             return [...(old || []), user];
           },
